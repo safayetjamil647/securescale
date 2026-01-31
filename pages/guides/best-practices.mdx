@@ -1,0 +1,35 @@
+import { Callout, Steps } from 'nextra-theme-docs'
+
+# Hardening Best Practices
+
+Follow these steps to ensure your containerized applications are as secure as possible.
+
+<Steps>
+### Use Curated Base Images
+Avoid standard library images like `python`, `node`, or `ubuntu`. Use `securescale` images or distroless bases to minimize the attack surface.
+
+### Run as Non-Root
+Never run your application as root. All SecureScale images come with a `nonroot` user.
+<Callout type="info">
+  The `nonroot` user in Wolfi-based images typically has UID `65532`.
+</Callout>
+
+### Multi-Stage Builds
+Build your application in one stage and copy ONLY the necessary binaries to the final stage.
+
+### Read-Only Filesystem
+Run your containers with `--read-only` to prevent attackers from writing to the disk.
+</Steps>
+
+## CVE Checklist
+
+| Action | Tool | Benefit |
+| :--- | :--- | :--- |
+| Scan Daily | Trivy / Grype | Identify new vulnerabilities early. |
+| Monitor SBOMs | Syft | Track all dependencies (even transitive). |
+| Sign Images | Cosign | Verify the image hasn't been tampered with. |
+
+---
+
+> [!WARNING]
+> While curated images reduce risk, the code YOU write is still your responsibility. Always perform static analysis (SAST) on your own code.

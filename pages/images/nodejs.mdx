@@ -1,0 +1,34 @@
+# Node.js Curated Images
+
+Hardened Node.js images based on **Chainguard Distroless**. These images contain no shell, making them extremely resistant to exploitation.
+
+## Images
+
+| Framework | Tag | Base | Size |
+| :--- | :--- | :--- | :--- |
+| **Node.js 20** | `securescale/nodejs:20-distroless` | Chainguard | ~30MB |
+| **Node.js 22** | `securescale/nodejs:22-distroless` | Chainguard | ~32MB |
+
+## Usage Example
+
+```dockerfile
+# Build Stage
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Production Stage
+FROM securescale/nodejs:20-distroless
+COPY --from=build /app/dist /app
+WORKDIR /app
+CMD ["server.js"]
+```
+
+## Why Distroless?
+
+1. **No Shell**: Attackers cannot execute remote shells (`sh`, `bash`).
+2. **Reduced Footprint**: Only the `node` binary and its shared libraries.
+3. **Fewer CVEs**: Zero typical "OS-level" vulnerabilities.

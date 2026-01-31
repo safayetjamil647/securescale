@@ -1,17 +1,43 @@
-# Securescale
- 
-Welcome to **Securescale**, a robust platform designed to provide scalable security solutions for modern enterprises.
+import { Bleed } from 'nextra-theme-docs'
 
-## Mission
+# SecureScale: Hardened Base Images
 
-Our mission is to simplify security management while ensuring your infrastructure scales seamlessly. Whether you're managing cloud assets, internal networks, or distributed teams, Securescale provides the visibility and control you need.
+**The curated library of zero-CVE, distroless Docker images for modern web frameworks.**
 
-## Features
+<div className="mt-10 mb-20">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="p-6 border rounded-xl bg-gray-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
+      <h3 className="text-xl font-bold mb-2">🛡️ Zero CVE</h3>
+      <p className="text-neutral-500">Every image is scanned daily and rebuilt on every upstream patch to ensure a clean security posture.</p>
+    </div>
+    <div className="p-6 border rounded-xl bg-gray-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
+      <h3 className="text-xl font-bold mb-2">🧊 Distroless</h3>
+      <p className="text-neutral-500"> Containing only your app and its runtime. No shells, no extra packages.</p>
+    </div>
+    <div className="p-6 border rounded-xl bg-gray-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800">
+      <h3 className="text-xl font-bold mb-2">⚡ Optimized</h3>
+      <p className="text-neutral-500">Smaller footprints, faster pull times, and better performance for FastAPI, Django, and Node.js.</p>
+    </div>
+  </div>
+</div>
 
-- **Scalable Architecture**: Built to grow with your organization.
-- **Real-time Monitoring**: Instant alerts and comprehensive dashboards.
-- **Enterprise-grade Security**: Industry-standard protection for your most critical assets.
+## Supported Frameworks
 
-## Getting Started
+We currently provide and maintain hardened images for:
 
-Check out our guide on [Quick Start](/advanced) to begin your journey with Securescale.
+- **Python**: FastAPI, Django, Flask (Wolfi based)
+- **Node.js**: Express, NestJS, Next.js (Distroless)
+- **Go**: Static and Dynamic binaries
+- **Nginx**: Nginx Hardened Images 
+---
+
+## Why SecureScale?
+
+Traditional base images like `python:3.11` or `node:20` often come with hundreds of pre-installed packages, most of which aren't needed at runtime. These packages increase the attack surface and frequently contain known vulnerabilities (CVEs).
+
+SecureScale flips the script by providing:
+
+1. **Minimalism**: Only what is needed.
+2. **Provenance**: Verifiable build chains with SBOMs.
+3. **Speed**: Weekly patches mean you don't wait for "next month's release".
+

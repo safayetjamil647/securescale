@@ -1,6 +1,7 @@
 {
   "index": "Introduction",
-  "advanced": "Getting Started",
+  "images": "Curated Images",
+  "guides": "Hardened Guides",
   "about": {
     "title": "About Us",
     "type": "page"

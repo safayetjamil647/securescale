@@ -1,29 +1,32 @@
-# Getting Started with Securescale
+# Getting Started
 
-Welcome! Follow these steps to get your Securescale environment up and running in minutes.
+Start using SecureScale curated images in your development and production environments.
 
-## 1. Installation
+## 1. Choose your image
+Browse the [Curated Images](/images) gallery to find the base that matches your framework (FastAPI, Django, Express, etc.).
 
-Install the Securescale CLI via your preferred package manager:
+## 2. Update your Dockerfile
+Switch your existing base image to a SecureScale hardened base.
 
-```bash
-npm install -g @securescale/cli
+```dockerfile
+# BEFORE
+# FROM python:3.11-slim
+
+# AFTER
+FROM securescale/python:fastapi-3.11
 ```
 
-## 2. Configuration
-
-Initialize your project configuration:
-
-```bash
-securescale init
-```
-
-## 3. Deployment
-
-Deploy your first secure instance:
+## 3. Configure Runtime Security
+To get the full benefit of SecureScale, run your containers with read-only filesystems.
 
 ```bash
-securescale deploy
+docker run --read-only securescale/python:fastapi-3.11
 ```
 
-For more advanced configurations, check out the sub-topics in this section.
+---
+
+## Next Steps
+
+- Learn about [Hardening Best Practices](/guides/best-practices).
+- Set up [Automated Scanning](/guides/cve-scanning) in your CI pipeline.
+

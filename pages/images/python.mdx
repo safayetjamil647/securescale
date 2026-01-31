@@ -1,0 +1,56 @@
+import { Tabs, Tab } from 'nextra-theme-docs'
+
+# Python Curated Images
+
+Hardened Python images based on **Wolfi (glibc)**. Designed specifically for FastAPI and Django applications that require a balance between security and compatibility.
+
+## Images
+
+| Framework | Tag | Base | Size |
+| :--- | :--- | :--- | :--- |
+| **FastAPI** | `securescale/python:fastapi-3.11` | Wolfi | ~45MB |
+| **Django** | `securescale/python:django-3.11` | Wolfi | ~60MB |
+
+## Quick Start
+
+<Tabs items={['FastAPI', 'Django']}>
+  <Tab>
+    ### FastAPI Usage
+    ```dockerfile
+    FROM securescale/python:fastapi-3.11
+
+    COPY requirements.txt .
+    RUN pip install -r requirements.txt
+
+    COPY . .
+    
+    # Non-root user is pre-configured
+    USER nonroot
+    
+    CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+    ```
+  </Tab>
+  <Tab>
+    ### Django Usage
+    ```dockerfile
+    FROM securescale/python:django-3.11
+
+    # Add any extra build dependencies if needed
+    # RUN apk add --no-cache ...
+
+    COPY . .
+    
+    # Switch to nonroot
+    USER nonroot
+    
+    CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    ```
+  </Tab>
+</Tabs>
+
+## Security Features
+
+- **Read-only Root FS**: Images are tested to run with `--read-only`.
+- **Non-root access**: Default user is `nonroot` (UID 65532).
+- **SBOM included**: Access the Software Bill of Materials via `docker inspect`.
+- **Daily Scans**: Guaranteed zero-CVE at time of publication.

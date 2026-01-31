@@ -1,0 +1,31 @@
+# Go Curated Images
+
+Hardened Go images based on **Chainguard Distroless**. Optimized for static and dynamic Go binaries.
+
+## Images
+
+| Variant | Tag | Base | Size |
+| :--- | :--- | :--- | :--- |
+| **Static** | `securescale/go:static` | Chainguard | ~2MB |
+| **Dynamic** | `securescale/go:dynamic` | Chainguard | ~5MB |
+
+## Usage Example
+
+```dockerfile
+# Build Stage
+FROM golang:1.21-alpine AS build
+WORKDIR /app
+COPY . .
+RUN CGO_ENABLED=0 go build -o main .
+
+# Production Stage
+FROM securescale/go:static
+COPY --from=build /app/main /main
+CMD ["/main"]
+```
+
+## Security Features
+
+- **No Shell**: Prevents shell-based exploits.
+- **Minimal Footprint**: Only the root certificates and your binary (for static).
+- **Daily Scans**: Guaranteed zero-CVE posture.

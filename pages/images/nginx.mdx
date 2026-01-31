@@ -1,0 +1,34 @@
+# Nginx Curated Images
+
+Hardened Nginx images based on **Chainguard Distroless**. These images are designed to serve static content or act as a reverse proxy with a minimal attack surface.
+
+## Images
+
+| Variant | Tag | Base | Size |
+| :--- | :--- | :--- | :--- |
+| **Mainline** | `securescale/nginx:1.25-distroless` | Chainguard | ~15MB |
+| **Stable** | `securescale/nginx:1.24-distroless` | Chainguard | ~14MB |
+
+## Usage Example
+
+Serving a static website:
+
+```dockerfile
+# Build Stage
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY . .
+RUN npm install && npm run build
+
+# Production Stage
+FROM securescale/nginx:1.25-distroless
+COPY --from=build /app/dist /usr/share/nginx/html
+# No extra configuration needed for basic static serving
+```
+
+## Security Features
+
+1. **Zero CVEs**: Scanned daily and rebuilt on every security patch.
+2. **Minimalist**: Contains only the Nginx binary and required libraries—no shell or unnecessary utilities.
+3. **Non-root**: Configured to run as a non-privileged user by default.
+4. **Optimized**: Fast startup times and extremely small footprint.
