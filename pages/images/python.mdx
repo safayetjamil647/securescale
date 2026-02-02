@@ -2,55 +2,103 @@ import { Tabs, Tab } from 'nextra-theme-docs'
 
 # Python Curated Images
 
-Hardened Python images based on **Wolfi (glibc)**. Designed specifically for FastAPI and Django applications that require a balance between security and compatibility.
+Hardened Python images based on **alpine:3.19**. Designed specifically for FastAPI and Django applications that require a balance between security and compatibility.
 
 ## Images
 
 | Framework | Tag | Base | Size |
 | :--- | :--- | :--- | :--- |
-| **FastAPI** | `securescale/python:fastapi-3.11` | Wolfi | ~45MB |
-| **Django** | `securescale/python:django-3.11` | Wolfi | ~60MB |
+| **Django** | `securescale/django-6.0:python-3.1.2` | alpine:3.19 | ~132MB |
+| **FastAPI** | `securescale/python:fastapi-3.11` | alpine:3.19 | ~45MB |
 
-## Quick Start
+## Quick Start for Django
 
-<Tabs items={['FastAPI', 'Django']}>
+Follow these steps to containerize your Django application using our hardened images.
+
+<Tabs items={['Dockerfile', 'entrypoint.py']}>
   <Tab>
-    ### FastAPI Usage
+    ### 1. Create Dockerfile
+    Save the following content as **`Dockerfile`** in your project root.
+
     ```dockerfile
-    FROM securescale/python:fastapi-3.11
+    # Use the hardened Django image
+    FROM securescale/django-6.0:python-3.1.2
 
+    # Set working directory
+    WORKDIR /app
+
+    # Install dependencies
     COPY requirements.txt .
-    RUN pip install -r requirements.txt
+    RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
-    COPY . .
-    
-    # Non-root user is pre-configured
-    USER nonroot
-    
-    CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+    # Copy project files
+    COPY . /app
+    COPY entrypoint.py /entrypoint.py
+
+    # Set entrypoint and default command
+    ENTRYPOINT ["python3", "/entrypoint.py"]
+    CMD ["manage.py", "runserver", "0.0.0.0:8000"]
     ```
   </Tab>
   <Tab>
-    ### Django Usage
-    ```dockerfile
-    FROM securescale/python:django-3.11
+    ### 2. Create Entrypoint Script
+    Save the following content as **`entrypoint.py`** in your project root. This script handles initialization tasks like migrations and static file collection.
 
-    # Add any extra build dependencies if needed
-    # RUN apk add --no-cache ...
+    ```python
+    #!/usr/bin/env python3
+    import os
+    import sys
+    import subprocess
 
-    COPY . .
-    
-    # Switch to nonroot
-    USER nonroot
-    
-    CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    APP_DIR = "/app"
+    MANAGE_PY = os.path.join(APP_DIR, "manage.py")
+
+    def run_manage_command(command: str):
+        print(f"Running: manage.py {command}")
+        subprocess.run(
+            [sys.executable, MANAGE_PY] + command.split(),
+            check=False,
+            cwd=APP_DIR,
+        )
+
+    def main():
+        # Always operate from /app
+        os.chdir(APP_DIR)
+
+        # Ensure logs directory
+        logs_dir = os.path.join(APP_DIR, "logs")
+        if not os.path.exists(logs_dir):
+            print("Creating logs directory...")
+            os.makedirs(logs_dir, exist_ok=True)
+
+        # Optional Django management tasks (enabled via env var)
+        if os.environ.get("RUN_MANAGE_TASKS") == "1":
+            run_manage_command("collectstatic --noinput")
+            run_manage_command("migrate")
+
+        # Execute runtime command
+        if len(sys.argv) > 1:
+            print(f"Executing: {' '.join(sys.argv[1:])}")
+            os.execv(
+                sys.executable,
+                [sys.executable] + sys.argv[1:],
+            )
+        else:
+            print("Starting Django development server...")
+            os.execv(
+                sys.executable,
+                [sys.executable, MANAGE_PY, "runserver", "0.0.0.0:8000"],
+            )
+
+    if __name__ == "__main__":
+        main()
     ```
   </Tab>
 </Tabs>
 
 ## Security Features
 
-- **Read-only Root FS**: Images are tested to run with `--read-only`.
+- **Minimal base image**: Distroless image (reduced attack surface).
 - **Non-root access**: Default user is `nonroot` (UID 65532).
-- **SBOM included**: Access the Software Bill of Materials via `docker inspect`.
-- **Daily Scans**: Guaranteed zero-CVE at time of publication.
+- **No SSH inside container**: Container does not expose SSH or shell access by default
+- **Immutable image**: Image built once and reused (no manual changes in runtime)

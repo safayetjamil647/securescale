@@ -1,6 +1,6 @@
 {
     "python": "Python (FastAPI/Django)",
+    "nginx": "Nginx (Web Server)",
     "nodejs": "Node.js (Express)",
-    "go": "Go (Static)",
-    "nginx": "Nginx (Web Server)"
+    "go": "Go (Static)"
 }
